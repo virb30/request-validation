@@ -2,10 +2,17 @@
 
 require __DIR__."/../vendor/autoload.php";
 
-use App\Example;
+use App\Controllers\OrderController;
 
-$example = new Example(false);
+$app = new \Slim\App();
 
-$example->execute();
+$app->get('/', function($req, $res, $args) {
+  $body = $req->getBody();
+  $body->write(json_encode(['message' => 'Hello World!']));
+  return $res->withStatus(200)->withBody($body);
 
-phpinfo();
+});
+
+$app->post('/orders', OrderController::class.':createOrder');
+
+$app->run();

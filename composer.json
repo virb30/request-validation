@@ -14,5 +14,9 @@
     },
     "require-dev": {
         "phpunit/phpunit": "^9.5"
+    },
+    "require": {
+        "slim/slim": "3.*",
+        "respect/validation": "^2.2"
     }
 }
