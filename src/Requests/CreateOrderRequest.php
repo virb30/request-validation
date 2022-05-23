@@ -4,21 +4,15 @@ namespace App\Requests;
 
 class CreateOrderRequest extends FormRequest
 {
-  protected $allErrors = true;
+  protected $stopOnFirstFailure = false;
 
   protected function rules()
   {
     return [
-      'cpf' => $this->getValidator()
-        ->cpf(),
-      'email' => $this->getValidator()
-        ->email(),
-      'products' => $this->getValidator()
-        ->arrayType()
-        ->length(1, null),
-      'coupon' => $this->getValidator()
-        ->optional($this->getValidator()
-          ->stringVal())
+      'cpf' => ['digit:.,-', 'cpf'],
+      'email' => ['email'],
+      'products' => ['arrayType', 'length:1'],
+      'coupon' => ['optional' => ['stringVal']],
     ];
   }
 }

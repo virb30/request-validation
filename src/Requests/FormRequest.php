@@ -2,55 +2,42 @@
 
 namespace App\Requests;
 
+use App\Adapters\Validator\ValidationException;
+use App\Adapters\Validator\ValidatorInterface;
 use Exception;
 use Psr\Http\Message\ServerRequestInterface;
-use Respect\Validation\Exceptions\NestedValidationException;
-use Respect\Validation\Factory;
-use Respect\Validation\Validator;
 
 class FormRequest
 {
+  protected $stopOnFirstFailure = false;
+  
   private $data;
-  protected $allErrors = false;
   private $errors = [];
+  private ValidatorInterface $validator;
 
-  public function __construct(ServerRequestInterface $request)
+  public function __construct(ServerRequestInterface $request, ValidatorInterface $validator)
   {
     $this->data = array_merge($request->getParsedBody(), $request->getQueryParams());
-  }
-
-  public function getValidator(): Validator
-  {
-    return Validator::create();
+    $this->validator = $validator;
   }
 
   public function validate()
   {
     $rules = $this->rules();
-    foreach($rules as $field => $validator) {
+    foreach($rules as $field => $fieldRules) {
+      $this->validator->setRules($fieldRules);
       try {
-        $validator->assert($this->getField($field));
-      } catch (NestedValidationException $ex) {        
-        if (!$this->allErrors) {
-          throw $ex;
+        $this->validator->validate($this->getField($field));
+      } catch (ValidationException $ex) {        
+        $this->addError($field, $this->validator->getErrors());
+        if ($this->stopOnFirstFailure) {
+          throw new Exception(json_encode($this->errors));
         }
-        $this->setErrors($field, $ex->getMessages());
       }
     }
-
     if(!$this->hasPassed()) {
       throw new Exception(json_encode($this->errors));
     }
-  }
-
-  private function hasPassed()
-  {
-    return empty($this->errors);
-  }
-
-  private function setErrors($field, $messages)
-  {
-    $this->errors[$field] = $messages;
   }
 
   public function validated()
@@ -62,6 +49,16 @@ class FormRequest
   protected function rules()
   {
     return [];
+  }
+
+  private function hasPassed()
+  {
+    return empty($this->errors);
+  }
+
+  private function addError($field, $messages)
+  {
+    $this->errors[$field] = $messages;
   }
 
   private function getField($key, $default = null)

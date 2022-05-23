@@ -2,24 +2,38 @@
 
 namespace App\Controllers;
 
+use App\Adapters\Validator\RespectValidationValidator;
 use App\Requests\CreateOrderRequest;
 use Exception;
+use Psr\Container\ContainerInterface;
 use Psr\Http\Message\ResponseInterface;
+use Psr\Http\Message\ServerRequestInterface;
 use Slim\Http\Request;
 
 class OrderController
 {
-  public function createOrder(Request $request, ResponseInterface $response, $args)
+  protected $container;
+
+  public function __construct(ContainerInterface $container)
   {
-    $request = new CreateOrderRequest($request);
+    $this->container = $container;
+  }
+
+  public function createOrder(ServerRequestInterface $request, ResponseInterface $response, $args)
+  {
+    $request = new CreateOrderRequest($request, $this->container->get('validator'));
     $body = $response->getBody();
     try {
       $data = $request->validated();
       $body->write(json_encode(['message' => 'success', 'data' => $data]));
-      return $response->withStatus(201)->withBody($body);
+      return $response->withStatus(201)
+        ->withBody($body)
+        ->withHeader('Content-Type', 'application/json');
     } catch (Exception $ex) {
       $body->write($ex->getMessage());
-      return $response->withStatus(400)->withBody($body);
+      return $response->withStatus(400)
+        ->withBody($body)
+        ->withHeader('Content-Type', 'application/json');
     }
   }
 }
