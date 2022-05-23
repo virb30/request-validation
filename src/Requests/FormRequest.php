@@ -27,7 +27,7 @@ class FormRequest
     foreach($rules as $field => $fieldRules) {
       $this->validator->setRules($fieldRules);
       try {
-        $this->validator->validate($this->getField($field));
+        $this->validator->validate($this->getFieldData($field));
       } catch (ValidationException $ex) {        
         $this->addError($field, $this->validator->getErrors());
         if ($this->stopOnFirstFailure) {
@@ -61,7 +61,7 @@ class FormRequest
     $this->errors[$field] = $messages;
   }
 
-  private function getField($key, $default = null)
+  private function getFieldData($key, $default = null)
   {
     $result = $default;
     if (is_array($this->data) && isset($this->data[$key])) {

@@ -1,57 +1,22 @@
-# PHP Docker Template
+# PHP Request Validator
 
-PHP project template with Docker
+PHP project that implements Request Validation using Respect\Validation
 
 ## Description
 
-Configures Docker containers for:
-- PHP
-- Nginx
-- Composer
+Implementation example of Request Validation in Slim 3 Framework using only
+Respect\Validation library, based on Laravel FormRequest.
 
-### Directory structure
+### Creating validation
 
-Below we decribe the default directory structure to be used as a starting point.
-Feel free to change it as your needs.
+Create a FormRequest derivated class with the rules list (see Respect\Validation docs)
+to know more about the available rules.
 
-#### Directories
+## Future improvementes
 
-- `.docker`: contains Dockerfiles and files that are required for docker to run
-- `.vscode`: contains configuration files of VS Code (debug)
-- `public`: public path of project - You should put all public files in this folder eg. index.php, favicon.ico
-- `src`: source code of application - All the code should be put in this directory
-- `tests`: tests files of application - PHPUnit will listen to this folder by default
-
-#### Files
-- `composer.json`
-- `composer.lock`
-- `docker-compose.yml`
-- `Makefile`: contains some common commands to be used as helper
-- `phpunit.xml`: configures PHPUnit
-
-
-## Available Configuration
-
-You can set a DB_DRIVER to be installed at PHP image build, accepted values are:
-- none: to use with Sqlite
-- mysql: to use with MariaDB
-- pgsql: to use with Postgres
-
-It's also possible to set the INSTALL_REDIS argument to true, 
-this will install the Redis driver to PHP image at build.
-
-```yml
-...
-php:
-  build:
-    # ...
-    args:
-      USER_ID: ${UID:-0}
-      GROUP_ID: ${GID:-0}
-      INSTALL_REDIS: "false"
-      DB_DRIVER: "none"
-...
-```
+- [ ] Possibility to inject FormRequest class on controller method
+- [ ] Possibility to prepare data for validation
+- [ ] Possibility to get cleaned data after validation
 
 ## How to Use
 

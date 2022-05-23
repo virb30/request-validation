@@ -25,7 +25,11 @@ class OrderController
     $body = $response->getBody();
     try {
       $data = $request->validated();
-      $body->write(json_encode(['message' => 'success', 'data' => $data]));
+      
+      // execute any business rule
+      $processed = $data;
+
+      $body->write(json_encode(['message' => 'success', 'data' => $processed]));
       return $response->withStatus(201)
         ->withBody($body)
         ->withHeader('Content-Type', 'application/json');
