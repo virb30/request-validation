@@ -14,7 +14,7 @@ to know more about the available rules.
 
 ## Future improvementes
 
-- [ ] Possibility to inject FormRequest class on controller method
+- [ ] Possibility to inject FormRequest subclass on controller method
 - [ ] Possibility to prepare data for validation
 - [ ] Possibility to get cleaned data after validation
 
